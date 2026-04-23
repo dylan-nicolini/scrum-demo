@@ -7,6 +7,11 @@ users = []
 next_id = 1
 
 
+@app.route('/users', methods=['GET'])
+def get_users():
+    return jsonify(users), 200
+
+
 @app.errorhandler(404)
 def not_found(e):
     return jsonify({"error": "Not found"}), 404
