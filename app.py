@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
@@ -10,6 +10,27 @@ next_id = 1
 @app.errorhandler(404)
 def not_found(e):
     return jsonify({"error": "Not found"}), 404
+
+
+@app.route('/users', methods=['POST'])
+def create_user():
+    global next_id
+    data = request.get_json(silent=True) or {}
+
+    name = data.get('name')
+    email = data.get('email')
+
+    if not name or not email:
+        return jsonify({"error": "'name' and 'email' are required"}), 400
+
+    if any(u['email'] == email for u in users):
+        return jsonify({"error": "Email already registered"}), 400
+
+    user = {'id': next_id, 'name': name, 'email': email}
+    users.append(user)
+    next_id += 1
+
+    return jsonify(user), 201
 
 
 if __name__ == '__main__':
